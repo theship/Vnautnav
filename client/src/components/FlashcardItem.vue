@@ -14,7 +14,6 @@
 <script setup>
 import { ref } from 'vue'
 
-// Directly use defineProps without importing it
 const props = defineProps({
   flashcard: {
     type: Object,
@@ -35,12 +34,16 @@ const flipCard = () => {
   height: fit-content;
   min-height: 35px;
   flex-basis: auto;
+  margin: 0 auto;
+  min-width: 100%;
+  max-width: 25vh;
 }
 
 .flashcard-content {
   width: 100%;
   transform-style: preserve-3d;
   transition: transform 0.5s;
+  position: relative;
 }
 
 .flashcard-front,
@@ -50,6 +53,10 @@ const flipCard = () => {
   width: 100%;
   padding: 20px;
   border: 1px solid #ccc;
+  top: 0;
+  left: 0;
+  
+  background-color: hsla(160, 100%, 98%, 1);
 }
 
 .flashcard-back {

@@ -1,6 +1,13 @@
 <template>
-  <div class="flashcards-container">
-    <FlashcardItem v-for="flashcard in flashcards" :key="flashcard.id" :flashcard="flashcard" />
+  <div class="flashcards-app">
+    <div class="flashcard-container">
+      <FlashcardItem v-if="flashcards.length > 0" :flashcard="flashcards[currentIndex]"
+        :key="flashcards[currentIndex].id" />
+    </div>
+    <div class="navigation">
+      <button @click="previousFlashcard" :disabled="currentIndex <= 0">Previous</button>
+      <button @click="nextFlashcard" :disabled="currentIndex >= flashcards.length - 1">Next</button>
+    </div>
   </div>
 </template>
 
@@ -9,6 +16,19 @@ import FlashcardItem from './FlashcardItem.vue'
 import { ref, onMounted } from 'vue'
 
 const flashcards = ref([])
+const currentIndex = ref(0)
+
+const nextFlashcard = () => {
+  if (currentIndex.value < flashcards.value.length - 1) {
+    currentIndex.value++
+  }
+}
+
+const previousFlashcard = () => {
+  if (currentIndex.value > 0) {
+    currentIndex.value--
+  }
+}
 
 onMounted(() => {
   fetch('http://localhost:3000/flashcards')
@@ -29,9 +49,41 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.flashcards-container {
+.flashcards-app {
   display: flex;
   flex-direction: column;
-  gap: 115px;
+  justify-content: space-between;
+  align-items: center;
+  height: 25vh;
+  padding: 20px 0;
+}
+
+.flashcard-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  flex-grow: 1;
+}
+
+.navigation {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  justify-content: center;
+  padding: 10px 0;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  color: hsla(160, 100%, 37%, 1);
+  background-color: hsla(160, 100%, 97%, 1);
+  min-width: 15vw;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 </style>
