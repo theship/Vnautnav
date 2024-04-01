@@ -32,6 +32,6 @@ onMounted(() => {
 .flashcards-container {
   display: flex;
   flex-direction: column;
-  gap: 125px;
+  gap: 115px;
 }
 </style>

@@ -33,8 +33,7 @@ const flipCard = () => {
 .flashcard-item {
   perspective: 1000px;
   height: fit-content;
-  min-height: 50px;
-  padding-bottom: 5px;
+  min-height: 35px;
   flex-basis: auto;
 }
 
