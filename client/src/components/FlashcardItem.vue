@@ -55,7 +55,6 @@ const flipCard = () => {
   border: 1px solid #ccc;
   top: 0;
   left: 0;
-  
   background-color: hsla(160, 100%, 98%, 1);
 }
 
