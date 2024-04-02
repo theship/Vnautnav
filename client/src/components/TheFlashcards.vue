@@ -46,6 +46,24 @@ onMounted(() => {
       // Handle the error appropriately in a real app
     });
 });
+
+// Example method to handle response updates
+const updateFlashcardResponse = ({ flashcardId, gotIt }) => {
+  const index = flashcards.value.findIndex(card => card.id === flashcardId);
+  if (index !== -1) {
+    flashcards.value[index].gotIt = gotIt; // Assuming 'gotIt' is a boolean property in your flashcard model
+  }
+};
+
+// Example methods to filter flashcards based on user response
+const loadGotItFlashcards = () => {
+  // Implement filtering logic based on 'gotIt' property
+};
+
+const loadMorePracticeFlashcards = () => {
+  // Implement filtering logic
+};
+
 </script>
 
 <style scoped>
@@ -54,7 +72,7 @@ onMounted(() => {
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  height: 25vh;
+  height: 50vh;
   padding: 20px 0;
 }
 

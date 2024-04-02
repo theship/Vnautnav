@@ -1,5 +1,18 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
+import { ref, onMounted } from 'vue';
+
+const isLoggedIn = ref(false);
+const username = ref('');
+
+onMounted(() => {
+  // Assume you store the username in localStorage after login
+  const user = localStorage.getItem('username');
+  if (user) {
+    isLoggedIn.value = true;
+    username.value = user;
+  }
+});
 </script>
 
 <template>
@@ -9,7 +22,12 @@ import { RouterLink, RouterView } from 'vue-router'
       <nav>
         <RouterLink to="/">Home</RouterLink>
         <RouterLink to="/about">About</RouterLink>
+        <RouterLink to="/login">Login | Signup</RouterLink>
+        <div class="user-info" v-if="isLoggedIn">
+          Welcome, {{ username }}
+        </div>
       </nav>
+
     </div>
   </header>
 
@@ -50,6 +68,11 @@ nav a {
 
 nav a:first-of-type {
   border: 0;
+}
+
+.user-info {
+  float: right;
+  /* Additional styling */
 }
 
 @media (min-width: 1024px) {

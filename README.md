@@ -15,7 +15,7 @@
 ### initialize & install
 
 > npm init -y
-> npm install express sqlite3 csv-parser cors
+> npm install express sqlite3 csv-parser cors bcrypt jsonwebtoken dotenv
 
 ### Create a datasource csv file
 
@@ -110,6 +110,56 @@ app.listen(PORT, () => {
 
 ```
 
+### Create a temporary JWT secret key
+
+In the terminal, run Node.js in interactive mode by typing `node` and hitting Enter.
+
+```
+> node
+```
+
+Use the crypto module to generate a random string, like so:
+
+```
+> require('crypto').randomBytes(64).toString('hex')
+```
+
+#### Store the Secret Key Securely
+For security and configurability, it's best to store your secret key outside of your application code, such as in environment variables. You can use a .env file to manage environment variables in a development environment.
+
+Install the dotenv package to load environment variables from a .env file into process.env:
+
+```
+> npm install dotenv
+```
+Create a .env file in the root of your project if you haven't already.
+
+Add your secret key to the .env file:
+
+```
+JWT_SECRET=your_generated_secret_here
+```
+
+Keep your .env file secure and ensure it's included in your .gitignore file to prevent it from being committed to version control.
+
+Regularly rotate your secret keys and update them in your environment variables to maintain security, especially if you suspect the key has been compromised.
+
+#### Load environment variables with dotenv
+
+At the beginning of your app.js, add:
+
+```
+require('dotenv').config();
+```
+
+#### Use the Secret Key in Your Application
+
+Now that your secret key is stored in an environment variable, you can use it to sign JWT tokens securely:
+
+```
+const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+```
+
 ### Run backend from the server directory
 
 ```
@@ -123,6 +173,8 @@ A row has been inserted with rowid 2
 .
 .
 ```
+
+
 
 ## In client directory
 

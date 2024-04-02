@@ -6,13 +6,16 @@
       </div>
       <div class="flashcard-back">
         <p>{{ flashcard.answer }}</p>
+        <!-- Response buttons -->
+        <button v-if="isFlipped" @click.stop="handleResponse(true)">Got it!</button>
+        <button v-if="isFlipped" @click.stop="handleResponse(false)">More practice, please.</button>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref } from 'vue';
 
 const props = defineProps({
   flashcard: {
@@ -22,9 +25,15 @@ const props = defineProps({
 })
 
 const isFlipped = ref(false)
+const emit = defineEmits(['update-response'])
 
 const flipCard = () => {
   isFlipped.value = !isFlipped.value
+}
+
+// Handle user response
+const handleResponse = (gotIt) => {
+  emit('update-response', { flashcardId: props.flashcard.id, gotIt });
 }
 </script>
 
@@ -52,17 +61,47 @@ const flipCard = () => {
   position: absolute;
   width: 100%;
   padding: 20px;
-  border: 1px solid #ccc;
+  border: 1px solid hsla(160, 100%, 37%, 1);
+  border-radius: 10px;
   top: 0;
   left: 0;
   background-color: hsla(160, 100%, 98%, 1);
+  cursor: pointer;
 }
 
 .flashcard-back {
   transform: rotateY(180deg);
+  height: fit-content;
 }
 
 .flipped {
   transform: rotateY(180deg);
+}
+
+.flashcard-back button {
+  display: block;
+  width: calc(100% - 40px);
+  margin: 5px auto;
+  padding: 5px;
+  background-color: hsla(160, 100%, 40%, 1);
+  color: white;
+  border: none;
+  border-radius: 10px;
+}
+
+.flashcard-back button:nth-child(3) {
+  background-color: hsla(4.11, 89.62%, 66%, 1);
+}
+
+.flashcard-back button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.flashcard-back {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: fit-content;
 }
 </style>
