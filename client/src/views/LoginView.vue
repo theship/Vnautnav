@@ -19,6 +19,7 @@
 <script>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { loginUser as storeLoginUser } from '../stores/userStore'; 
 
 export default {
   setup() {
@@ -28,7 +29,7 @@ export default {
       password: ''
     });
 
-    const loginUser = async () => {
+    const performLogin = async () => {
       const credentials = { username: loginDetails.value.username, password: loginDetails.value.password };
 
       try {
@@ -48,37 +49,26 @@ export default {
         // Assuming the backend sends back a username in the response, for example:
         // { "username": "user123", "token": "..." }
 
-        // Store username and other necessary info in localStorage
+        // On succesful login, store username and other necessary info in localStorage
+        storeLoginUser(data.username); // This updates the store with the username
         localStorage.setItem('username', data.username);
-        localStorage.setItem('token', data.token); // if you're also handling tokens
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('isLoggedIn', 'true');
 
-        // Redirect or perform additional actions upon successful login
-        // For example, using Vue Router to navigate to another route
         router.push({ name: 'home' });
       } catch (error) {
         console.error(error);
-        // Handle error (e.g., show error message)
       }
-    };
-
-    const logoutUser = () => {
-      // Clear localStorage items
-      localStorage.removeItem('username');
-      localStorage.removeItem('token'); // If using tokens
-
-      // Additional logout logic, like redirecting to the login page
-      router.push({ name: 'login' });
     };
 
     return {
       loginDetails,
-      loginUser
+      loginUser: performLogin
     };
   }
 };
 </script>
 
-<!-- Add styles as needed -->
 <style scoped>
 .login-container {
   max-width: 300px;

@@ -1,12 +1,9 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
-import { ref, onMounted } from 'vue';
-
-const isLoggedIn = ref(false);
-const username = ref('');
+import { RouterLink, RouterView } from 'vue-router';
+import { onMounted } from 'vue';
+import { isLoggedIn, username } from './stores/userStore';
 
 onMounted(() => {
-  // Assume you store the username in localStorage after login
   const user = localStorage.getItem('username');
   if (user) {
     isLoggedIn.value = true;

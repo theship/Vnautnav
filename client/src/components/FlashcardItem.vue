@@ -6,16 +6,16 @@
       </div>
       <div class="flashcard-back">
         <p>{{ flashcard.answer }}</p>
-        <!-- Response buttons -->
-        <button v-if="isFlipped" @click.stop="handleResponse(true)">Got it!</button>
-        <button v-if="isFlipped" @click.stop="handleResponse(false)">More practice, please.</button>
+        <!-- Response buttons, shown only if the user is logged in and the card is flipped -->
+        <button v-if="isFlipped && isLoggedIn" @click.stop="handleResponse(true)">Got it!</button>
+        <button v-if="isFlipped && isLoggedIn" @click.stop="handleResponse(false)">More practice, please.</button>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 
 const props = defineProps({
   flashcard: {
@@ -26,6 +26,11 @@ const props = defineProps({
 
 const isFlipped = ref(false)
 const emit = defineEmits(['update-response'])
+
+// Computed property to determine if the user is logged in
+const isLoggedIn = computed(() => {
+  return localStorage.getItem('username') !== null;
+});
 
 const flipCard = () => {
   isFlipped.value = !isFlipped.value

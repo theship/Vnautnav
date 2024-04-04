@@ -17,6 +17,21 @@ app.use(cors({
 // Parse JSON bodies (as sent by API clients)
 app.use(express.json());
 
+// Middleware to decode token and add user ID to the request
+app.use((req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+    if (token == null) return next(); // No token, proceed without user ID
+
+    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+        if (err) return res.sendStatus(403); // Invalid token
+        req.userId = user.id; // Add the user ID to the request
+        next();
+    });
+});
+
+
+
 const db = new sqlite3.Database('./flashcards.db', sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, (err) => {
     if (err) {
         console.error(err.message);
@@ -174,10 +189,23 @@ app.post('/login', (req, res) => {
     });
 });
 
-// Existing endpoint to get flashcards
+// Endpoint to get flashcards
 app.get('/flashcards', (req, res) => {
-    const sql = "SELECT * FROM flashcards";
-    db.all(sql, [], (err, rows) => {
+    const filter = req.query.filter;
+    const userId = req.userId; // This might be undefined if no token or an invalid token is provided
+
+    let sql = "SELECT f.* FROM flashcards f";
+    let params = [];
+
+    // Adjust the query only if a user is logged in and a filter is requested
+    if (userId && (filter === 'gotIt' || filter === 'morePractice')) {
+        const gotItValue = filter === 'gotIt' ? 1 : 0;
+        sql += " JOIN flashcardresults fr ON f.id = fr.flashcard_id WHERE fr.user_id = ? AND fr.got_it = ?";
+        params = [userId, gotItValue];
+    }
+
+    // Execute the query with or without user-specific filtering
+    db.all(sql, params, (err, rows) => {
         if (err) {
             res.status(400).json({ "error": err.message });
             return;
@@ -185,6 +213,41 @@ app.get('/flashcards', (req, res) => {
         res.json({
             "message": "success",
             "data": rows
+        });
+    });
+});
+
+
+// Endpoint to register flashcard response
+app.post('/flashcardResponse', (req, res) => {
+    const { username, flashcardId, gotIt } = req.body;
+
+    // First, find the user_id that corresponds to the username
+    const userSql = `SELECT id FROM users WHERE username = ?`;
+    db.get(userSql, [username], (err, userRow) => {
+        if (err) {
+            res.status(400).json({ "error": err.message });
+            return;
+        }
+        if (!userRow) {
+            res.status(404).json({ "error": "User not found" });
+            return;
+        }
+
+        // Then, insert the flashcard response using the user_id
+        const responseSql = `INSERT INTO flashcardresults (user_id, flashcard_id, got_it) VALUES (?, ?, ?)`;
+        db.run(responseSql, [userRow.id, flashcardId, gotIt], function (err) {
+            if (err) {
+                res.status(500).json({ "error": err.message });
+                return;
+            }
+
+            console.log(`flashcardResponse table updated with username: ${username}, User ID: ${userRow.id}, Flashcard ID: ${flashcardId}, Got it?: ${gotIt}`);
+
+            res.json({
+                message: 'Success',
+                data: { id: this.lastID },
+            });
         });
     });
 });
