@@ -2,91 +2,21 @@ const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const sqlite3 = require('sqlite3').verbose();
 const fs = require('fs');
 const csv = require('csv-parser');
-const app = express();
-const PORT = 3000;
-
 require('dotenv').config();
 
-app.use(cors({
-    origin: 'http://localhost:5173'
-}));
+const { db, setupDatabase } = require('./database');
+const verifyToken = require('./authMiddleware');
 
-// Parse JSON bodies (as sent by API clients)
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+app.use(cors({ origin: 'http://localhost:5173' }));
 app.use(express.json());
+app.use(verifyToken);
 
-// Middleware to decode token and add user ID to the request
-app.use((req, res, next) => {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
-    if (token == null) return next(); // No token, proceed without user ID
-
-    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-        if (err) return res.sendStatus(403); // Invalid token
-        req.userId = user.id; // Add the user ID to the request
-        next();
-    });
-});
-
-
-
-const db = new sqlite3.Database('./flashcards.db', sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, (err) => {
-    if (err) {
-        console.error(err.message);
-    }
-    console.log('Connected to the flashcards database.');
-});
-
-db.serialize(() => {
-    // Create flashcards table
-    db.run(`CREATE TABLE IF NOT EXISTS flashcards (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      question TEXT NOT NULL,
-      answer TEXT NOT NULL
-    )`);
-
-    // Create users table
-    db.run(`CREATE TABLE IF NOT EXISTS users (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      username TEXT NOT NULL UNIQUE,
-      password TEXT NOT NULL
-    )`);
-
-    // Create flashcardresults table
-    db.run(`CREATE TABLE IF NOT EXISTS flashcardresults (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      user_id INTEGER NOT NULL,
-      flashcard_id INTEGER NOT NULL,
-      got_it BOOLEAN NOT NULL,
-      FOREIGN KEY (user_id) REFERENCES users(id),
-      FOREIGN KEY (flashcard_id) REFERENCES flashcards(id)
-    )`);
-
-    // Check if flashcards table is empty before inserting initial data
-    db.get("SELECT COUNT(*) AS count FROM flashcards", (err, row) => {
-        if (err) {
-            console.error(err.message);
-        } else if (row.count === 0) { // Only insert if the table is empty
-            const csvFilePath = 'data/nav-rule.csv';
-
-            fs.createReadStream(csvFilePath)
-                .pipe(csv())
-                .on('data', (row) => {
-                    db.run('INSERT INTO flashcards (question, answer) VALUES (?, ?)', [row.question, row.answer], function (err) {
-                        if (err) {
-                            return console.error(err.message);
-                        }
-                        console.log(`A row has been inserted with rowid ${this.lastID}`);
-                    });
-                })
-                .on('end', () => {
-                    console.log('CSV file successfully processed and data inserted into the database.');
-                });
-        }
-    });
-});
+setupDatabase();
 
 // Function to add a new user
 const saltRounds = 10;
