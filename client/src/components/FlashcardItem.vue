@@ -92,10 +92,19 @@ const handleResponse = (gotIt) => {
   color: white;
   border: none;
   border-radius: 10px;
+  transition: background-color 0.3s;
+}
+
+.flashcard-back button:active {
+  background-color: hsla(160, 100%, 87%, 1);
 }
 
 .flashcard-back button:nth-child(3) {
   background-color: hsla(4.11, 89.62%, 66%, 1);
+}
+
+.flashcard-back button:nth-child(3):active {
+  background-color: hsla(4.11, 89.62%, 87%, 1);
 }
 
 .flashcard-back button:disabled {

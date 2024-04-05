@@ -100,11 +100,19 @@ const loadAllFlashcards = () => loadFlashcards();
 
 button {
   padding: 10px 20px;
+  margin: 5px;
   font-size: 16px;
   cursor: pointer;
   color: hsla(160, 100%, 37%, 1);
   background-color: hsla(160, 100%, 97%, 1);
   min-width: 15vw;
+  border: 1px solid #89d2ba;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+button:active {
+  background-color: hsla(160, 100%, 87%, 1);
 }
 
 button:disabled {
