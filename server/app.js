@@ -38,7 +38,6 @@ function addUser(username, password) {
 }
 
 // Endpoint for user registration
-// Endpoint for user registration
 app.post('/register', async (req, res) => {
     const { username, password } = req.body;
 
