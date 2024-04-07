@@ -10,9 +10,9 @@ const { db, setupDatabase } = require('./database');
 const verifyToken = require('./authMiddleware');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3030;
 
-app.use(cors({ origin: 'http://localhost:5173' }));
+app.use(cors({ origin: 'http://localhost:5173' })); // Called in client/src...
 app.use(express.json());
 app.use(verifyToken);
 

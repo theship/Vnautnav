@@ -33,7 +33,7 @@ export default {
       const credentials = { username: loginDetails.value.username, password: loginDetails.value.password };
 
       try {
-        const response = await fetch('http://localhost:3000/login', {
+        const response = await fetch('http://localhost:3030/login', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

@@ -1,6 +1,6 @@
 # Initial Vue Node Express Flashcards project
 
-[toc]
+After cloning, npm install in both client & server directories.
 
 ## Set up a folder with both a client & server subdirectory
 

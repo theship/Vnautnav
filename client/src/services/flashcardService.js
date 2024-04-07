@@ -1,6 +1,6 @@
 // flashcardService.js
 export const fetchFlashcards = async (filter = null) => {
-    let url = 'http://localhost:3000/flashcards';
+    let url = 'http://localhost:3030/flashcards';
     if (filter !== null) {
         url += `?filter=${filter}`;
     }
@@ -20,7 +20,7 @@ export const fetchFlashcards = async (filter = null) => {
 };
 
 export const postFlashcardResponse = async ({ flashcardId, gotIt }) => {
-    const url = 'http://localhost:3000/flashcardResponse';
+    const url = 'http://localhost:3030/flashcardResponse';
     const user = localStorage.getItem('username');
     if (!user) {
         throw new Error("User is not logged in.");
