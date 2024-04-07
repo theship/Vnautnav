@@ -121,7 +121,10 @@ app.post('/login', (req, res) => {
 // Endpoint to get flashcards
 app.get('/flashcards', (req, res) => {
     const filter = req.query.filter;
-    const userId = req.userId; // This might be undefined if no token or an invalid token is provided
+
+    // If this is undefined (no or invalid token) flashcards still work,
+    // there's just no way to filter them based on user responses
+    const userId = req.userId;
 
     let sql = "SELECT f.* FROM flashcards f";
     let params = [];
